@@ -478,7 +478,7 @@ main { max-width: 960px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
 }
 .leaderboard-table td {
   border-bottom: 1px solid var(--border);
-  font-size: .88rem;
+  font-size: 1rem;
   padding: .65rem .75rem;
 }
 .leaderboard-table tr:last-child td { border-bottom: none; }
@@ -550,7 +550,8 @@ main { max-width: 960px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
   <header>
     <div class="header-logo">MM <span>2026</span></div>
     <div class="header-nick">
-      Pelaaja: <span class="nick-badge" id="nick-display"></span>
+        Pelaaja: <span class="nick-badge" id="nick-display"></span>
+        <span id="sync-indicator" style="font-size:.72rem;color:var(--muted);margin-left:.5rem;"></span>
     </div>
   </header>
 
@@ -739,12 +740,111 @@ let koPreds      = JSON.parse(localStorage.getItem('mm26s_ko')       || '{}');
 let awardsPreds  = JSON.parse(localStorage.getItem('mm26s_awards')   || '{}');
 let sheetsUrl    = localStorage.getItem('mm26s_sheetsurl') || '';
 
-function persist() {
-  localStorage.setItem('mm26s_groups',   JSON.stringify(groupOrder));
-  localStorage.setItem('mm26s_ko',       JSON.stringify(koPreds));
-  localStorage.setItem('mm26s_awards',   JSON.stringify(awardsPreds));
-  localStorage.setItem('mm26s_sheetsurl', sheetsUrl);
-}
+//function persist() {
+//  localStorage.setItem('mm26s_groups',   JSON.stringify(groupOrder));
+//  localStorage.setItem('mm26s_ko',       JSON.stringify(koPreds));
+//  localStorage.setItem('mm26s_awards',   JSON.stringify(awardsPreds));
+//  localStorage.setItem('mm26s_sheetsurl', sheetsUrl);
+//}
+
+    // ── LIITÄ TÄMÄ mm2026.html-TIEDOSTOON ────────────────────────────────────
+    //
+    // 1. Aseta WEBHOOK_URL alle (saat sen Apps Script -deploysta)
+    // 2. Korvaa vanha persist()-funktio tällä koodilla kokonaan
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // ▼ Vaihda tähän oma Apps Script Web App -URL ▼
+    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwL-eYqy8f7fRPtFuVJjlqc7U1f8r4rAN17_a0Gp33ljMo_lPQZtgjSOXkN3RvusPj5/exec';
+
+    // Debounce-ajastin — ei lähetetä jokaista drag-liikettä erikseen
+    let syncTimer = null;
+
+    function persist() {
+        // 1. Tallennetaan aina ensin lokaalisti (nopea, offline-turvallinen)
+        localStorage.setItem('mm26s_groups', JSON.stringify(groupOrder));
+        localStorage.setItem('mm26s_ko', JSON.stringify(koPreds));
+        localStorage.setItem('mm26s_awards', JSON.stringify(awardsPreds));
+        localStorage.setItem('mm26s_sheetsurl', sheetsUrl);
+
+        // 2. Lähetetään Sheetsiin debounce-viiveellä (1.5s hiljaisuuden jälkeen)
+        //    Näin drag & drop ei spämmää pyyntöjä jokaisesta pikseliliikkeestä
+        if (!nick || !WEBHOOK_URL || WEBHOOK_URL.includes('SINUN_DEPLOYMENT_ID')) return;
+
+        clearTimeout(syncTimer);
+        syncTimer = setTimeout(() => syncToSheets(), 1500);
+    }
+
+    async function syncToSheets() {
+        const payload = {
+            nick,
+            groups: groupOrder,
+            knockout: koPreds,
+            awards: awardsPreds,
+        };
+
+        // Näytä tallennusindikaattori
+        setSyncStatus('saving');
+
+        try {
+            const res = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                // Apps Script ei tue CORS-preflight — mode: 'no-cors' ohittaa sen
+                // Haittapuoli: vastauksen sisältöä ei voida lukea, mutta pyyntö menee perille
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            setSyncStatus('saved');
+        } catch (err) {
+            // Epäonnistui — data on silti lokaalisti tallessa
+            console.warn('Sheets-synkronointi epäonnistui:', err);
+            setSyncStatus('error');
+        }
+    }
+
+    // ── Pieni tilanäyttö UI:ssa ───────────────────────────────────────────────
+    //
+    // Lisää tämä HTML headerin sisään (nick-badgen viereen):
+    //
+    //   <span id="sync-indicator" style="font-size:.72rem;color:var(--muted);margin-left:.5rem;"></span>
+    //
+    function setSyncStatus(state) {
+        const el = document.getElementById('sync-indicator');
+        if (!el) return;
+        const states = {
+            saving: '⏳ Tallennetaan…',
+            saved: '✓ Synkronoitu',
+            error: '⚠ Ei yhteyttä (data lokaalisti ok)',
+        };
+        el.textContent = states[state] || '';
+
+        // Häivytä "Synkronoitu"-teksti 3s jälkeen
+        if (state === 'saved') {
+            setTimeout(() => { if (el.textContent.startsWith('✓')) el.textContent = ''; }, 3000);
+        }
+    }
+
+    // ── HUOM: no-cors ja vaihtoehdot ─────────────────────────────────────────
+    //
+    // mode: 'no-cors' tarkoittaa että:
+    //   ✓ Pyyntö lähtee perille
+    //   ✓ Apps Script vastaanottaa ja tallentaa datan
+    //   ✗ Emme voi lukea HTTP-vastauksen sisältöä
+    //
+    // Jos haluat lukea vastauksen (esim. virheilmoitukset), Apps Scriptiin
+    // täytyy lisätä CORS-header. Tämä vaatii pienen muutoksen doPost():iin:
+    //
+    //   function doPost(e) {
+    //     const output = ContentService
+    //       .createTextOutput(JSON.stringify({ ok: true }))
+    //       .setMimeType(ContentService.MimeType.JSON);
+    //     // HUOM: Apps Script ei tue setHeader() suoraan — käytä
+    //     // tällöin erillistä Cloud Functions / Workers -proxya jos tarvitset
+    //     // täyden CORS-tuen. Useimmiten no-cors riittää.
+    //     return output;
+    //   }
+
 
 // ── GATE ──────────────────────────────────────────────
 document.getElementById('nick-input').addEventListener('keydown', e => {
