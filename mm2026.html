@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MM 2026 — Ennusteet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ─────────────────────────────────────────── */
+:root {
+  --bg:       #0d1117;
+  --surface:  #161b22;
+  --surface2: #21262d;
+  --border:   #30363d;
+  --accent:   #3fb950;
+  --accent2:  #58a6ff;
+  --gold:     #e3b341;
+  --text:     #e6edf3;
+  --muted:    #7d8590;
+  --danger:   #f85149;
+  --radius:   10px;
+  --font-head: 'Barlow Condensed', sans-serif;
+  --font-body: 'Barlow', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  min-height: 100vh;
+}
+
+/* ── NICKNAME GATE ──────────────────────────────────── */
+#gate {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
+}
+.gate-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+}
+.gate-ball {
+  font-size: 3.5rem;
+  display: block;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 0 20px rgba(63,185,80,.4));
+}
+.gate-card h1 {
+  font-family: var(--font-head);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: .03em;
+  line-height: 1.1;
+  margin-bottom: .3rem;
+}
+.gate-card h1 span { color: var(--accent); }
+.gate-sub {
+  color: var(--muted);
+  font-size: .85rem;
+  margin-bottom: 1.8rem;
+}
+.gate-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: .75rem 1rem;
+  text-align: center;
+  transition: border-color .15s;
+  margin-bottom: .75rem;
+}
+.gate-input:focus { outline: none; border-color: var(--accent); }
+.gate-input.shake { animation: shake .35s ease; border-color: var(--danger); }
+.gate-btn {
+  width: 100%;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-head);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  padding: .75rem;
+  cursor: pointer;
+  transition: opacity .15s, transform .1s;
+}
+.gate-btn:hover { opacity: .9; transform: translateY(-1px); }
+.gate-btn:active { transform: translateY(0); }
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  75%{transform:translateX(6px)}
+}
+
+/* ── HEADER ─────────────────────────────────────────── */
+#app { display: none; }
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: .75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-logo {
+  font-family: var(--font-head);
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+}
+.header-logo span { color: var(--accent); }
+.header-nick {
+  font-size: .8rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.nick-badge {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: .2rem .65rem;
+  font-size: .78rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── NAV TABS ────────────────────────────────────────── */
+nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+nav::-webkit-scrollbar { display: none; }
+nav button {
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: var(--font-head);
+  font-size: .95rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  padding: .8rem 1.2rem;
+  transition: color .15s, border-color .15s;
+  white-space: nowrap;
+}
+nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
+nav button:hover:not(.active) { color: var(--text); }
+
+/* ── MAIN LAYOUT ────────────────────────────────────── */
+main { max-width: 960px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
+.view { display: none; }
+.view.active { display: block; }
+
+/* ── SECTION HEADING ────────────────────────────────── */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: .6rem;
+  margin-bottom: 1rem;
+}
+.section-head h2 {
+  font-family: var(--font-head);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.section-head .hint {
+  font-size: .75rem;
+  color: var(--muted);
+}
+
+/* ── GROUPS ─────────────────────────────────────────── */
+.groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.group-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.group-label {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-head);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  padding: .5rem .85rem;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* drag & drop */
+.drag-list {
+  list-style: none;
+  padding: .4rem .5rem;
+  min-height: 60px;
+}
+.drag-item {
+  align-items: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  cursor: grab;
+  display: flex;
+  gap: .6rem;
+  margin-bottom: .35rem;
+  padding: .55rem .7rem;
+  transition: background .12s, transform .12s, box-shadow .12s;
+  user-select: none;
+  touch-action: none; /* enable pointer events for touch */
+  position: relative;
+}
+.drag-item:active { cursor: grabbing; }
+.drag-item.dragging {
+  opacity: .5;
+  transform: scale(.97);
+}
+.drag-item.drag-over {
+  border-color: var(--accent);
+  background: rgba(63,185,80,.1);
+}
+.pos-badge {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+  font-family: var(--font-head);
+  font-size: .7rem;
+  font-weight: 700;
+  min-width: 22px;
+  padding: 1px 4px;
+  text-align: center;
+}
+.pos-badge.p1 { color: var(--gold); border-color: var(--gold); }
+.pos-badge.p2 { color: var(--accent2); border-color: var(--accent2); }
+.pos-badge.p3,.pos-badge.p4 { color: var(--muted); }
+.drag-flag { font-size: 1.1rem; line-height: 1; }
+.drag-flag img { width: 17px; }
+.drag-name { font-size: .88rem; font-weight: 500; flex: 1; }
+.drag-handle {
+  color: var(--border);
+  font-size: .9rem;
+  line-height: 1;
+  padding-left: .2rem;
+}
+
+/* ── KNOCKOUT BRACKET ───────────────────────────────── */
+.bracket-scroll {
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  -webkit-overflow-scrolling: touch;
+}
+#bracket-wrap {
+  position: relative;
+  display: inline-block;
+  min-width: 900px;
+}
+#bracket-svg { display: block; }
+#bracket-teams { position: absolute; top: 0; left: 0; }
+
+.b-match {
+  position: absolute;
+  width: 128px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.b-team {
+  align-items: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  font-size: .72rem;
+  gap: .3rem;
+  min-height: 26px;
+  overflow: hidden;
+  padding: .22rem .45rem;
+  transition: background .12s, border-color .12s;
+  white-space: nowrap;
+  user-select: none;
+}
+.b-team:hover:not(.tbd) { background: rgba(63,185,80,.12); border-color: var(--accent); }
+.b-team.tbd { color: var(--muted); cursor: default; border-style: dashed; font-style: italic; }
+.b-team.winner { background: rgba(63,185,80,.18); border-color: var(--accent); font-weight: 600; color: var(--accent); }
+.b-team.champion {
+  background: rgba(227,179,65,.18);
+  border-color: var(--gold);
+  color: var(--gold);
+  font-weight: 700;
+  box-shadow: 0 0 8px rgba(227,179,65,.25);
+}
+.b-flag { font-size: .95rem; flex-shrink: 0; }
+.b-name { overflow: hidden; text-overflow: ellipsis; }
+
+.round-label {
+  position: absolute;
+  font-family: var(--font-head);
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.champion-box {
+  position: absolute;
+  text-align: center;
+  pointer-events: none;
+}
+.champion-trophy { font-size: 1.6rem; display: block; }
+.champion-name {
+  font-family: var(--font-head);
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--gold);
+  display: block;
+  margin-top: .15rem;
+}
+
+/* ── AWARDS ─────────────────────────────────────────── */
+.awards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: .85rem;
+}
+.award-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+  transition: border-color .15s;
+}
+.award-card.saved { border-left: 2.5px solid var(--accent); }
+.award-header { display: flex; align-items: center; gap: .6rem; }
+.award-icon { font-size: 1.6rem; line-height: 1; }
+.award-title {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.award-desc { font-size: .72rem; color: var(--muted); }
+.award-select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: .83rem;
+  padding: .5rem .7rem;
+  cursor: pointer;
+  transition: border-color .15s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%237d8590' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .65rem center;
+  padding-right: 1.8rem;
+}
+.award-select:focus { outline: none; border-color: var(--accent); }
+.award-select option { background: #21262d; }
+.award-save-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: var(--font-head);
+  font-size: .85rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: .45rem;
+  transition: all .15s;
+  width: 100%;
+}
+.award-save-btn:hover { border-color: var(--accent); color: var(--accent); }
+.award-save-btn.saved { background: rgba(63,185,80,.12); border-color: var(--accent); color: var(--accent); }
+.award-current { font-size: .72rem; color: var(--accent); min-height: .9rem; font-weight: 500; }
+
+/* ── SCORES VIEW ────────────────────────────────────── */
+.scores-info {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+.scores-info p { color: var(--muted); font-size: .85rem; line-height: 1.6; margin-bottom: 1rem; }
+.sheets-input-row {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.sheets-input {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: .85rem;
+  min-width: 200px;
+  max-width: 380px;
+  padding: .55rem .8rem;
+  transition: border-color .15s;
+}
+.sheets-input:focus { outline: none; border-color: var(--accent2); }
+.sheets-fetch-btn {
+  background: var(--accent2);
+  border: none;
+  border-radius: 7px;
+  color: #000;
+  cursor: pointer;
+  font-family: var(--font-head);
+  font-size: .9rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  padding: .55rem 1.1rem;
+  transition: opacity .15s;
+  white-space: nowrap;
+}
+.sheets-fetch-btn:hover { opacity: .85; }
+.sheets-fetch-btn:disabled { opacity: .5; cursor: default; }
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: .75rem;
+}
+.leaderboard-table th {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--font-head);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  padding: .6rem .75rem;
+  text-align: left;
+  text-transform: uppercase;
+}
+.leaderboard-table td {
+  border-bottom: 1px solid var(--border);
+  font-size: .88rem;
+  padding: .65rem .75rem;
+}
+.leaderboard-table tr:last-child td { border-bottom: none; }
+.leaderboard-table tr:hover td { background: rgba(255,255,255,.025); }
+.rank-cell {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--muted);
+}
+.rank-cell.r1 { color: var(--gold); }
+.rank-cell.r2 { color: var(--text); }
+.rank-cell.r3 { color: #cd7f32; }
+.score-cell { font-weight: 600; color: var(--accent); font-family: var(--font-head); font-size: 1rem; }
+.own-row td { background: rgba(63,185,80,.05) !important; }
+.error-box {
+  background: rgba(248,81,73,.1);
+  border: 1px solid rgba(248,81,73,.3);
+  border-radius: 7px;
+  color: var(--danger);
+  font-size: .83rem;
+  margin-top: .75rem;
+  padding: .65rem 1rem;
+}
+.loading-spinner {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent2);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  vertical-align: middle;
+  margin-right: .4rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── UTIL ────────────────────────────────────────────── */
+.save-strip {
+  align-items: center;
+  background: rgba(63,185,80,.08);
+  border: 1px solid rgba(63,185,80,.25);
+  border-radius: 7px;
+  color: var(--accent);
+  display: none;
+  font-size: .8rem;
+  gap: .4rem;
+  margin-top: .75rem;
+  padding: .4rem .75rem;
+}
+.save-strip.show { display: flex; }
+</style>
+</head>
+<body>
+
+<!-- ── NICKNAME GATE ───────────────────────── -->
+<div id="gate">
+  <div class="gate-card">
+    <span class="gate-ball">⚽</span>
+    <h1>MM <span>2026</span></h1>
+    <p class="gate-sub">Yhdysvallat · Kanada · Meksiko</p>
+    <input id="nick-input" class="gate-input" type="text"
+      placeholder="Nimimerkkisi" maxlength="24" autocomplete="off" spellcheck="false">
+    <button class="gate-btn" onclick="enterApp()">ALOITA ENNUSTAMINEN →</button>
+  </div>
+</div>
+
+<!-- ── APP ────────────────────────────────── -->
+<div id="app">
+  <header>
+    <div class="header-logo">MM <span>2026</span></div>
+    <div class="header-nick">
+      Pelaaja: <span class="nick-badge" id="nick-display"></span>
+    </div>
+  </header>
+
+  <nav>
+    <button class="active" data-view="groups"   onclick="showView('groups')">🌍 LOHKOT</button>
+    <button               data-view="knockout" onclick="showView('knockout')">🏆 PUDOTUSPELIT</button>
+    <button               data-view="awards"   onclick="showView('awards')">⭐ PALKINNOT</button>
+    <button               data-view="scores"   onclick="showView('scores')">📊 PISTEET</button>
+  </nav>
+
+  <main>
+
+    <!-- ── VIEW: LOHKOT ─────────────────────── -->
+    <div class="view active" id="view-groups">
+      <div class="section-head">
+        <h2>LOHKOVAIHE</h2>
+        <span class="hint">Järjestä joukkueet lohkon loppusijoituksiin raahaamalla</span>
+      </div>
+      <div class="groups-grid" id="groups-grid"></div>
+    </div>
+
+    <!-- ── VIEW: PUDOTUSPELIT ───────────────── -->
+    <div class="view" id="view-knockout">
+      <div class="section-head">
+        <h2>PUDOTUSPELIT</h2>
+        <span class="hint">Klikkaa voittajaa edetäksesi</span>
+      </div>
+      <div class="bracket-scroll">
+        <div id="bracket-wrap">
+          <svg id="bracket-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div id="bracket-teams"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VIEW: PALKINNOT ──────────────────── -->
+    <div class="view" id="view-awards">
+      <div class="section-head">
+        <h2>KISAPALKINNOT</h2>
+        <span class="hint">Valitse ennusteesi jokaiseen kategoriaan</span>
+      </div>
+      <div class="awards-grid" id="awards-grid"></div>
+    </div>
+
+    <!-- ── VIEW: PISTEET ────────────────────── -->
+    <div class="view" id="view-scores">
+      <div class="section-head">
+        <h2>PISTEET</h2>
+        <span class="hint">Hakee tulokset Google Sheetsistä</span>
+      </div>
+      <div class="scores-info">
+        <p>
+          Liitä alla olevaan kenttään Google Sheets -dokumentin julkinen CSV-URL.<br>
+          Taulukon tulee sisältää sarakkeet: <strong>Pelaaja, Pisteet</strong> (ja muut sarakket).
+        </p>
+        <div class="sheets-input-row">
+          <input id="sheets-url" class="sheets-input" type="url"
+            placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv">
+          <button class="sheets-fetch-btn" id="fetch-btn" onclick="fetchScores()">HAE PISTEET</button>
+        </div>
+        <div id="sheets-error" class="error-box" style="display:none"></div>
+      </div>
+      <div id="scores-table-wrap"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+'use strict';
+
+// ── DATA ──────────────────────────────────────────────
+
+const GROUPS = {
+  A: [
+    { name: 'Meksiko', flag: 'mx' },
+    { name:'Etelä-Afrikka', flag:'za' },
+    { name:'Etelä-Korea', flag:'kr' },
+    { name:'Tsekki', flag:'cz' },
+  ],
+  B: [
+    { name: 'Kanada', flag: 'ca' },
+    { name:'Bosnia-Hertsegovina', flag:'ba' },
+    { name: 'Qatar', flag: 'qa' },
+    { name:'Sveitsi', flag:'ch' },
+  ],
+  C: [
+    { name:'Brasilia', flag:'br' },
+    { name:'Haiti', flag:'ht' },
+    { name:'Marokko', flag:'ma' },
+    { name:'Skotlanti', flag:'gb-sct' },
+  ],
+  D: [
+    { name:'USA', flag:'us' },
+    { name:'Paraguay', flag:'py' },
+    { name:'Australia', flag:'au' },
+    { name:'Turkki', flag:'tr' },
+  ],
+  E: [
+    { name:'Saksa', flag:'de' },
+    { name:'Curaçao', flag:'cw' },
+    { name:'Norsunluurannikko', flag:'ci' },
+    { name:'Ecuador', flag:'ec' },
+  ],
+  F: [
+    { name:'Hollanti', flag:'nl' },
+    { name:'Japani', flag:'jp' },
+    { name:'Ruotsi', flag:'se' },
+    { name:'Tunisia', flag:'tn' },
+  ],
+  G: [
+    { name:'Belgia', flag:'be' },
+    { name:'Egypti', flag:'eg' },
+    { name:'Iran', flag:'ir' },
+    { name:'Uusi-Seelanti', flag:'nz' },
+  ],
+  H: [
+    { name:'Espanja', flag:'es' },
+    { name:'Kap Verde', flag:'cv' },
+    { name:'Saudi-Arabia', flag:'sa' },
+    { name:'Uruguay', flag:'uy' },
+  ],
+  I: [
+    { name: 'Ranska', flag: 'fr' },
+    { name: 'Senegal', flag: 'sn' },
+    { name: 'Irak', flag: 'iq' },
+    { name: 'Norja', flag: 'no' },
+  ],
+  J: [
+        { name: 'Argentiina', flag: 'ar' },
+        { name: 'Algeria', flag: 'dz' },
+        { name: 'Itävalta', flag: 'at' },
+        { name: 'Jordania', flag: 'jo' },
+  ],
+  K: [
+        { name: 'Portugali', flag: 'pt' },
+        { name: 'Kongon demokraattinen tasavalta', flag: 'cd' },
+        { name: 'Uzbekistan', flag: 'uz' },
+        { name: 'Kolumbia', flag: 'co' },
+  ],
+  L: [
+        { name: 'Englanti', flag: 'gb-eng' },
+        { name: 'Kroatia', flag: 'hr' },
+        { name: 'Ghana', flag: 'gh' },
+        { name: 'Panama', flag: 'pa' },
+  ],
+};
+
+const AWARDS = [
+  { id:'golden_boot', icon:'👟', title:'Maalikuningas',
+    desc:'Adidas Golden Boot — eniten maaleja',
+    opts:['Lionel Messi (ARG)','Kylian Mbappé (FRA)','Erling Haaland (NOR)','Vinicius Jr. (BRA)','Harry Kane (ENG)','Lautaro Martínez (ARG)','Mohamed Salah (EGY)','Bukayo Saka (ENG)','Pedri (ESP)','Jude Bellingham (ENG)','Rodri (ESP)','Raphinha (BRA)','Darwin Núñez (URU)','Julián Álvarez (ARG)','Antoine Griezmann (FRA)','Victor Osimhen (NGA)','Muu pelaaja'] },
+  { id:'golden_ball', icon:'🥇', title:'Paras pelaaja',
+    desc:'Adidas Golden Ball — kisojen tärkein pelaaja',
+    opts:['Lionel Messi (ARG)','Kylian Mbappé (FRA)','Erling Haaland (NOR)','Vinicius Jr. (BRA)','Jude Bellingham (ENG)','Rodri (ESP)','Pedri (ESP)','Bukayo Saka (ENG)','Raphinha (BRA)','Antoine Griezmann (FRA)','Bernardo Silva (POR)','Lamine Yamal (ESP)','Florian Wirtz (GER)','Kevin De Bruyne (BEL)','Virgil van Dijk (NED)','Muu pelaaja'] },
+  { id:'golden_glove', icon:'🧤', title:'Paras maalivahti',
+    desc:'Adidas Golden Glove — kisojen paras torjuja',
+    opts:['Emiliano Martínez (ARG)','Thibaut Courtois (BEL)','Manuel Neuer (GER)','Alisson (BRA)','Ederson (BRA)','Mike Maignan (FRA)','Gianluigi Donnarumma (ITA)','Jordan Pickford (ENG)','Jan Oblak (SLO)','Yassine Bounou (MAR)','Unai Simón (ESP)','David Raya (ESP)','André Onana (CMR)','Muu pelaaja'] },
+  { id:'best_young', icon:'🌟', title:'Paras nuori pelaaja',
+    desc:'FIFA Best Young Player — alle 21-vuotiaat',
+    opts:['Lamine Yamal (ESP)','Florian Wirtz (GER)','Pedri (ESP)','Gavi (ESP)','Bukayo Saka (ENG)','Warren Zaïre-Emery (FRA)','Endrick (BRA)','Alejandro Garnacho (ARG)','Kobbie Mainoo (ENG)','Antonio Silva (POR)','Nuno Mendes (POR)','Muu pelaaja'] },
+  { id:'fair_play', icon:'🤝', title:'Reilun pelin palkinto',
+    desc:'FIFA Fair Play Award — siistimmin pelannut joukkue',
+    opts:['Argentiina','Ranska','Espanja','Brasilia','Englanti','Portugali','Saksa','Alankomaat','Japani','Marokko','Uruguay','USA','Meksiko','Kanada','Senegal','Muu joukkue'] },
+];
+
+// Pudotuspeli: 32 joukkuetta → 16 ottelua R32, sitten normaali bracket
+const R32_SLOTS = Array.from({length:16}, (_,i) => ({
+  id: `r32-${i}`,
+  teamA: { name: `1${String.fromCharCode(65+Math.floor(i/2))}`, flag:'🏳️' },
+  teamB: { name: `2${String.fromCharCode(65+Math.floor(i/2)%8+8)}`, flag:'🏳️' },
+}));
+
+const KO_ROUNDS = [
+  { id:'r32', label:'Kierros 32',          count:16 },
+  { id:'r16', label:'Kierros 16',          count:8  },
+  { id:'qf',  label:'Puolivälierät',       count:4  },
+  { id:'sf',  label:'Välierät',            count:2  },
+  { id:'f',   label:'Finaali',             count:1  },
+];
+
+// ── STATE ─────────────────────────────────────────────
+let nick = '';
+let groupOrder   = JSON.parse(localStorage.getItem('mm26s_groups')   || '{}');
+let koPreds      = JSON.parse(localStorage.getItem('mm26s_ko')       || '{}');
+let awardsPreds  = JSON.parse(localStorage.getItem('mm26s_awards')   || '{}');
+let sheetsUrl    = localStorage.getItem('mm26s_sheetsurl') || '';
+
+function persist() {
+  localStorage.setItem('mm26s_groups',   JSON.stringify(groupOrder));
+  localStorage.setItem('mm26s_ko',       JSON.stringify(koPreds));
+  localStorage.setItem('mm26s_awards',   JSON.stringify(awardsPreds));
+  localStorage.setItem('mm26s_sheetsurl', sheetsUrl);
+}
+
+// ── GATE ──────────────────────────────────────────────
+document.getElementById('nick-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') enterApp();
+});
+
+function enterApp() {
+  const val = document.getElementById('nick-input').value.trim();
+  if (!val) {
+    document.getElementById('nick-input').classList.add('shake');
+    setTimeout(() => document.getElementById('nick-input').classList.remove('shake'), 400);
+    return;
+  }
+  nick = val;
+  localStorage.setItem('mm26s_nick', nick);
+  document.getElementById('nick-display').textContent = nick;
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display  = 'block';
+  buildAll();
+}
+
+// Palauta nimimerkki suoraan jos jo tallennettu
+(function() {
+  const saved = localStorage.getItem('mm26s_nick');
+  if (saved) {
+    document.getElementById('nick-input').value = saved;
+    nick = saved;
+  }
+})();
+
+// ── NAVIGATION ───────────────────────────────────────
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.view === id));
+  document.getElementById('view-' + id).classList.add('active');
+  if (id === 'knockout') renderBracket();
+}
+
+// ── BUILD ALL ─────────────────────────────────────────
+function buildAll() {
+  buildGroups();
+  buildAwards();
+  if (sheetsUrl) document.getElementById('sheets-url').value = sheetsUrl;
+}
+
+// ── GROUPS ────────────────────────────────────────────
+function buildGroups() {
+  const grid = document.getElementById('groups-grid');
+  grid.innerHTML = '';
+
+  Object.entries(GROUPS).forEach(([gKey, teams]) => {
+    // Palauta tallennettu järjestys tai alkuperäinen
+    const order = groupOrder[gKey]
+      ? groupOrder[gKey].map(name => teams.find(t => t.name === name)).filter(Boolean)
+      : [...teams];
+
+    const block = document.createElement('div');
+    block.className = 'group-block';
+    block.innerHTML = `<div class="group-label">LOHKO ${gKey}</div>`;
+
+    const list = document.createElement('ul');
+    list.className = 'drag-list';
+    list.dataset.group = gKey;
+
+    order.forEach(team => list.appendChild(makeItem(team)));
+    block.appendChild(list);
+    grid.appendChild(block);
+
+    initDragDrop(list);
+  });
+}
+
+function makeItem(team) {
+  const li = document.createElement('li');
+  li.className = 'drag-item';
+  li.dataset.name = team.name;
+  li.innerHTML = `
+    <span class="pos-badge"></span>
+    <span class="drag-flag"><img src="img/${team.flag}.svg" alt="${team.flag}" /></span>
+    <span class="drag-name">${team.name}</span>
+    <span class="drag-handle">⠿</span>`;
+  return li;
+}
+
+function updatePositions(list) {
+  list.querySelectorAll('.drag-item').forEach((li, i) => {
+    const badge = li.querySelector('.pos-badge');
+    badge.textContent = i + 1;
+    badge.className = 'pos-badge p' + (i + 1);
+  });
+  const gKey = list.dataset.group;
+  groupOrder[gKey] = [...list.querySelectorAll('.drag-item')].map(li => li.dataset.name);
+  persist();
+}
+
+// ── DRAG & DROP (pointer events, works on mobile) ────
+function initDragDrop(list) {
+  updatePositions(list);
+
+  let dragged = null;
+  let startY  = 0;
+  let cloneEl = null;
+  let originIdx = 0;
+
+  list.addEventListener('pointerdown', e => {
+    const item = e.target.closest('.drag-item');
+    if (!item) return;
+    e.preventDefault();
+
+    dragged   = item;
+    originIdx = [...list.children].indexOf(item);
+    startY    = e.clientY;
+    item.classList.add('dragging');
+    item.setPointerCapture(e.pointerId);
+  });
+
+  list.addEventListener('pointermove', e => {
+    if (!dragged) return;
+    e.preventDefault();
+
+    const items   = [...list.querySelectorAll('.drag-item:not(.dragging)')];
+    const listBox = list.getBoundingClientRect();
+    const relY    = e.clientY - listBox.top;
+
+    let target = null;
+    let insertBefore = true;
+    for (const it of items) {
+      const box = it.getBoundingClientRect();
+      const mid = box.top - listBox.top + box.height / 2;
+      if (relY < mid) { target = it; break; }
+    }
+
+    items.forEach(it => it.classList.remove('drag-over'));
+    if (target) {
+      target.classList.add('drag-over');
+      list.insertBefore(dragged, target);
+    } else {
+      list.appendChild(dragged);
+    }
+
+    updatePositions(list);
+  });
+
+  list.addEventListener('pointerup', e => {
+    if (!dragged) return;
+    dragged.classList.remove('dragging');
+    list.querySelectorAll('.drag-item').forEach(it => it.classList.remove('drag-over'));
+    dragged = null;
+    updatePositions(list);
+  });
+
+  list.addEventListener('pointercancel', e => {
+    if (!dragged) return;
+    dragged.classList.remove('dragging');
+    dragged = null;
+    updatePositions(list);
+  });
+}
+
+// ── KNOCKOUT BRACKET ─────────────────────────────────
+function getKoTeams(ri, mi) {
+  if (ri === 0) return R32_SLOTS[mi];
+  const prevId = KO_ROUNDS[ri - 1].id;
+  const wA = koPreds[prevId + '-' + (mi * 2)];
+  const wB = koPreds[prevId + '-' + (mi * 2 + 1)];
+  return { teamA: wA || null, teamB: wB || null };
+}
+
+function pickKoWinner(roundId, mi, team) {
+  koPreds[roundId + '-' + mi] = team;
+  persist();
+  renderBracket();
+}
+
+function renderBracket() {
+  const SVG_NS   = 'http://www.w3.org/2000/svg';
+  const COL_W    = 140;
+  const GAP_X    = 28;
+  const MATCH_H  = 56;
+  const HEADER   = 44;
+  const PAD_L    = 16;
+  const PAD_BOT  = 70;
+
+  const maxMatches = KO_ROUNDS[0].count; // 16
+  const SVG_H = HEADER + maxMatches * MATCH_H + PAD_BOT;
+  const SVG_W = KO_ROUNDS.length * (COL_W + GAP_X) + PAD_L * 2;
+
+  const svg  = document.getElementById('bracket-svg');
+  const wrap = document.getElementById('bracket-wrap');
+  const td   = document.getElementById('bracket-teams');
+
+  svg.setAttribute('viewBox', `0 0 ${SVG_W} ${SVG_H}`);
+  svg.setAttribute('width',  SVG_W);
+  svg.setAttribute('height', SVG_H);
+  wrap.style.width  = SVG_W + 'px';
+  wrap.style.height = SVG_H + 'px';
+  svg.innerHTML = '';
+  td.innerHTML  = '';
+
+  // calc center Y per match
+  const cy = KO_ROUNDS.map((rnd, ri) => {
+    const available = SVG_H - HEADER - PAD_BOT;
+    const step = available / rnd.count;
+    return Array.from({length: rnd.count}, (_, mi) =>
+      HEADER + step * mi + step / 2
+    );
+  });
+
+  // draw connector lines
+  KO_ROUNDS.forEach((rnd, ri) => {
+    if (ri === 0) return;
+    const colX    = PAD_L + ri * (COL_W + GAP_X);
+    const prevColX = PAD_L + (ri-1) * (COL_W + GAP_X);
+    const midX    = prevColX + COL_W + GAP_X / 2;
+
+    for (let mi = 0; mi < rnd.count; mi++) {
+      const srcA = cy[ri-1][mi*2];
+      const srcB = cy[ri-1][mi*2+1];
+      const dest = cy[ri][mi];
+
+      const line = (x1,y1,x2,y2) => {
+        const l = document.createElementNS(SVG_NS, 'line');
+        l.setAttribute('x1', x1); l.setAttribute('y1', y1);
+        l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+        l.setAttribute('stroke', '#30363d');
+        l.setAttribute('stroke-width', '1.5');
+        svg.appendChild(l);
+      };
+      line(prevColX + COL_W, srcA, midX, srcA);
+      line(prevColX + COL_W, srcB, midX, srcB);
+      line(midX, srcA, midX, srcB);
+      line(midX, dest, colX, dest);
+    }
+  });
+
+  // draw round labels + match cards
+  KO_ROUNDS.forEach((rnd, ri) => {
+    const colX = PAD_L + ri * (COL_W + GAP_X);
+
+    // round label
+    const lbl = document.createElementNS(SVG_NS, 'text');
+    lbl.setAttribute('x', colX + COL_W / 2);
+    lbl.setAttribute('y', 20);
+    lbl.setAttribute('text-anchor', 'middle');
+    lbl.setAttribute('font-size', '9.5');
+    lbl.setAttribute('font-weight', '700');
+    lbl.setAttribute('fill', ri === KO_ROUNDS.length-1 ? '#e3b341' : '#7d8590');
+    lbl.setAttribute('letter-spacing', '0.07');
+    lbl.textContent = rnd.label.toUpperCase();
+    svg.appendChild(lbl);
+
+    for (let mi = 0; mi < rnd.count; mi++) {
+      const { teamA, teamB } = getKoTeams(ri, mi);
+      const winner = koPreds[rnd.id + '-' + mi];
+      const isFinal = ri === KO_ROUNDS.length - 1;
+
+      const matchDiv = document.createElement('div');
+      matchDiv.className = 'b-match';
+      matchDiv.style.left = colX + 'px';
+      matchDiv.style.top  = (cy[ri][mi] - MATCH_H / 2 + 2) + 'px';
+
+      [teamA, teamB].forEach(team => {
+        const btn = document.createElement('div');
+        btn.className = 'b-team';
+        if (!team) {
+          btn.classList.add('tbd');
+          btn.innerHTML = '<span class="b-name">TBD</span>';
+        } else {
+          const isW = winner && winner.name === team.name;
+          if (isW && isFinal) btn.classList.add('champion');
+          else if (isW) btn.classList.add('winner');
+          btn.innerHTML = `<span class="b-flag">${team.flag}</span><span class="b-name">${team.name}</span>`;
+          btn.title = 'Valitse voittajaksi';
+          btn.onclick = () => pickKoWinner(rnd.id, mi, team);
+        }
+        matchDiv.appendChild(btn);
+      });
+      td.appendChild(matchDiv);
+    }
+  });
+
+  // champion box
+  const champ  = koPreds['f-0'];
+  const finCol = PAD_L + (KO_ROUNDS.length-1) * (COL_W + GAP_X);
+  const finCy  = cy[KO_ROUNDS.length-1][0];
+  const cbox   = document.createElement('div');
+  cbox.className = 'champion-box';
+  cbox.style.left  = (finCol + COL_W / 2 - 40) + 'px';
+  cbox.style.top   = (finCy + MATCH_H / 2 + 10) + 'px';
+  cbox.style.width = '80px';
+  cbox.innerHTML   = `<span class="champion-trophy">${champ ? '🏆' : '🥇'}</span>
+    ${champ ? `<span class="champion-name">${champ.flag} ${champ.name}</span>` : ''}`;
+  td.appendChild(cbox);
+}
+
+// ── AWARDS ────────────────────────────────────────────
+function buildAwards() {
+  const grid = document.getElementById('awards-grid');
+  grid.innerHTML = '';
+  AWARDS.forEach(aw => {
+    const saved = awardsPreds[aw.id];
+    const card  = document.createElement('div');
+    card.className = 'award-card' + (saved ? ' saved' : '');
+
+    const sel = document.createElement('select');
+    sel.className = 'award-select';
+    const placeholder = document.createElement('option');
+    placeholder.value = ''; placeholder.textContent = '— Valitse —';
+    sel.appendChild(placeholder);
+    aw.opts.forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt; o.textContent = opt;
+      if (saved === opt) o.selected = true;
+      sel.appendChild(o);
+    });
+
+    const current = document.createElement('div');
+    current.className = 'award-current';
+    current.textContent = saved ? 'Ennusteesi: ' + saved : '';
+
+    const btn = document.createElement('button');
+    btn.className = 'award-save-btn' + (saved ? ' saved' : '');
+    btn.textContent = saved ? '✓ TALLENNETTU' : 'TALLENNA';
+    btn.onclick = () => {
+      const val = sel.value;
+      if (!val) { sel.style.borderColor = '#f85149'; setTimeout(() => sel.style.borderColor = '', 700); return; }
+      awardsPreds[aw.id] = val;
+      persist();
+      card.classList.add('saved');
+      btn.classList.add('saved');
+      btn.textContent = '✓ TALLENNETTU';
+      current.textContent = 'Ennusteesi: ' + val;
+    };
+
+    card.innerHTML = `
+      <div class="award-header">
+        <span class="award-icon">${aw.icon}</span>
+        <div>
+          <div class="award-title">${aw.title}</div>
+          <div class="award-desc">${aw.desc}</div>
+        </div>
+      </div>`;
+    card.appendChild(sel);
+    card.appendChild(current);
+    card.appendChild(btn);
+    grid.appendChild(card);
+  });
+}
+
+// ── SCORES / GOOGLE SHEETS ───────────────────────────
+async function fetchScores() {
+  const urlInput = document.getElementById('sheets-url');
+  const url      = urlInput.value.trim();
+  const errBox   = document.getElementById('sheets-error');
+  const fetchBtn = document.getElementById('fetch-btn');
+  const tableWrap = document.getElementById('scores-table-wrap');
+
+  errBox.style.display   = 'none';
+  tableWrap.innerHTML    = '';
+
+  if (!url) {
+    errBox.textContent = 'Syötä Google Sheets CSV-URL ensin.';
+    errBox.style.display = 'block';
+    return;
+  }
+
+  sheetsUrl = url;
+  persist();
+
+  fetchBtn.disabled = true;
+  fetchBtn.innerHTML = '<span class="loading-spinner"></span>HAETAAN…';
+
+  try {
+    // Google Sheets julkinen CSV-exportti
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    const rows = text.trim().split('\n').map(r =>
+      r.split(',').map(c => c.replace(/^"|"$/g,'').trim())
+    );
+    if (rows.length < 2) throw new Error('Taulukossa ei ole dataa.');
+
+    const headers = rows[0];
+    const nameIdx  = headers.findIndex(h => /pelaaja|nimi|name|player/i.test(h));
+    const scoreIdx = headers.findIndex(h => /piste|score|pts/i.test(h));
+    if (nameIdx < 0 || scoreIdx < 0)
+      throw new Error('Taulukosta ei löydy sarakkeita "Pelaaja" ja "Pisteet". Tarkista sarakenimet.');
+
+    const data = rows.slice(1)
+      .filter(r => r[nameIdx])
+      .map(r => ({ name: r[nameIdx], score: Number(r[scoreIdx]) || 0, raw: r }))
+      .sort((a,b) => b.score - a.score);
+
+    renderScoreTable(data, headers, nameIdx, scoreIdx);
+  } catch(err) {
+    errBox.textContent = 'Virhe: ' + err.message + ' — Varmista että Sheet on julkinen ja URL on CSV-muodossa (export?format=csv).';
+    errBox.style.display = 'block';
+  } finally {
+    fetchBtn.disabled = false;
+    fetchBtn.textContent = 'HAE PISTEET';
+  }
+}
+
+function renderScoreTable(data, headers, nameIdx, scoreIdx) {
+  const wrap = document.getElementById('scores-table-wrap');
+
+  const table = document.createElement('table');
+  table.className = 'leaderboard-table';
+
+  const thead = document.createElement('thead');
+  thead.innerHTML = `<tr>
+    <th>#</th>
+    <th>PELAAJA</th>
+    <th>PISTEET</th>
+  </tr>`;
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  data.forEach((row, i) => {
+    const tr = document.createElement('tr');
+    const isOwn = row.name.toLowerCase() === nick.toLowerCase();
+    if (isOwn) tr.className = 'own-row';
+    const rankClass = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : '';
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+    tr.innerHTML = `
+      <td class="rank-cell ${rankClass}">${medal || (i+1)}</td>
+      <td>${row.name}${isOwn ? ' <span style="color:var(--accent);font-size:.72rem;font-weight:600;">← sinä</span>' : ''}</td>
+      <td class="score-cell">${row.score}</td>`;
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+}
+
+// Enter sheets URL with enter key
+document.getElementById('sheets-url')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') fetchScores();
+});
+</script>
+</body>
+</html>
