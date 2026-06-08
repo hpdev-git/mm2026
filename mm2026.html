@@ -242,12 +242,12 @@ main { max-width: 960px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
 }
 .drag-item:active { cursor: grabbing; }
 .drag-item.dragging {
-  opacity: .5;
-  transform: scale(.97);
-}
-.drag-item.drag-over {
   border-color: var(--accent);
   background: rgba(63,185,80,.1);
+}
+.drag-item.drag-over {
+  opacity: .5;
+  transform: scale(.97);
 }
 .pos-badge {
   background: var(--surface);
@@ -266,7 +266,7 @@ main { max-width: 960px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
 .pos-badge.p3,.pos-badge.p4 { color: var(--muted); }
 .drag-flag { font-size: 1.1rem; line-height: 1; }
 .drag-flag img { width: 17px; }
-.drag-name { font-size: .88rem; font-weight: 500; flex: 1; }
+.drag-name { font-size: 1rem; font-weight: 500; flex: 1; }
 .drag-handle {
   color: var(--border);
   font-size: .9rem;
@@ -1096,8 +1096,9 @@ function buildAwards() {
 
 // ── SCORES / GOOGLE SHEETS ───────────────────────────
 async function fetchScores() {
-  const urlInput = document.getElementById('sheets-url');
-  const url      = urlInput.value.trim();
+
+  const urlInput = 'https://docs.google.com/spreadsheets/d/1fwPr_SmuX4hOjpDDblqRSOOAd2Z5Sy-PsBgFxc-hKlo/export?format=csv'; //document.getElementById('sheets-url');
+  const url      = urlInput //.value.trim();
   const errBox   = document.getElementById('sheets-error');
   const fetchBtn = document.getElementById('fetch-btn');
   const tableWrap = document.getElementById('scores-table-wrap');
