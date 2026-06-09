@@ -170,6 +170,10 @@ nav button {
 }
 nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
 nav button:hover:not(.active) { color: var(--text); }
+    nav button:disabled {
+        cursor: not-allowed;
+        background-image: none, linear-gradient(to bottom, rgba(0, 0, 0, 1) 0, rgba(0, 0, 0, 0) 100%);
+    }
 
 /* ── MAIN LAYOUT ────────────────────────────────────── */
 main { max-width: 960px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
@@ -557,7 +561,7 @@ main { max-width: 960px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
 
   <nav>
     <button class="active" data-view="groups"   onclick="showView('groups')">🌍 LOHKOT</button>
-    <button               data-view="knockout" onclick="showView('knockout')">🏆 PUDOTUSPELIT</button>
+    <button               data-view="knockout" onclick="showView('knockout')" disabled>🏆 PUDOTUSPELIT</button>
     <button               data-view="awards"   onclick="showView('awards')">⭐ PALKINNOT</button>
     <button               data-view="scores"   onclick="showView('scores')">📊 PISTEET</button>
   </nav>
@@ -603,14 +607,8 @@ main { max-width: 960px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
         <span class="hint">Hakee tulokset Google Sheetsistä</span>
       </div>
       <div class="scores-info">
-        <p>
-          Liitä alla olevaan kenttään Google Sheets -dokumentin julkinen CSV-URL.<br>
-          Taulukon tulee sisältää sarakkeet: <strong>Pelaaja, Pisteet</strong> (ja muut sarakket).
-        </p>
         <div class="sheets-input-row">
-          <input id="sheets-url" class="sheets-input" type="url"
-            placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv">
-          <button class="sheets-fetch-btn" id="fetch-btn" onclick="fetchScores()">HAE PISTEET</button>
+          <button class="sheets-fetch-btn" id="fetch-btn" onclick="fetchScores()">PÄIVITÄ PISTETAULUKKO</button>
         </div>
         <div id="sheets-error" class="error-box" style="display:none"></div>
       </div>
