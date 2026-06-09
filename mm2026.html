@@ -702,28 +702,113 @@ const GROUPS = {
 
 const AWARDS = [
   { id:'golden_boot', icon:'👟', title:'Maalikuningas',
-    desc:'Adidas Golden Boot — eniten maaleja',
-    opts:['Lionel Messi (ARG)','Kylian Mbappé (FRA)','Erling Haaland (NOR)','Vinicius Jr. (BRA)','Harry Kane (ENG)','Lautaro Martínez (ARG)','Mohamed Salah (EGY)','Bukayo Saka (ENG)','Pedri (ESP)','Jude Bellingham (ENG)','Rodri (ESP)','Raphinha (BRA)','Darwin Núñez (URU)','Julián Álvarez (ARG)','Antoine Griezmann (FRA)','Victor Osimhen (NGA)','Muu pelaaja'] },
+        desc: 'Adidas Golden Boot — eniten maaleja',
+        opts: ['Alexander Isak (SWE)','Bukayo Saka (ENG)','Cody Gakpo (NED)', 'Cristiano Ronaldo (POR)', 'Erling Haaland (NOR)', 'Harry Kane (ENG)','Heung-Min Son (KOR)','Joao Pedro (BRA)','Kai Havertz (GER)', 'Kylian Mbappé (FRA)', 'Lamine Yamal (ESP)', 'Lionel Messi (ARG)', 'Luis Diaz (COL)', 'Mikel Oyarzabal (ESP)','Nick Woltemade (GER)','Romelu Lukaku (BEL)','Victor Gyökeres (SWE)', 'Vinicius Jr. (BRA)','Wout Weghorst (NED)', 'Muu pelaaja']
+    },
   { id:'golden_ball', icon:'🥇', title:'Paras pelaaja',
     desc:'Adidas Golden Ball — kisojen tärkein pelaaja',
-    opts:['Lionel Messi (ARG)','Kylian Mbappé (FRA)','Erling Haaland (NOR)','Vinicius Jr. (BRA)','Jude Bellingham (ENG)','Rodri (ESP)','Pedri (ESP)','Bukayo Saka (ENG)','Raphinha (BRA)','Antoine Griezmann (FRA)','Bernardo Silva (POR)','Lamine Yamal (ESP)','Florian Wirtz (GER)','Kevin De Bruyne (BEL)','Virgil van Dijk (NED)','Muu pelaaja'] },
+      opts: ['Achraf Hakimi (MOR)', 'Brahim Diaz (MOR)', 'Bruno Fernandes (POR)', 'Bukayo Saka (ENG)', 'Cristiano Ronaldo (POR)', 'Erling Haaland (NOR)','Federico Valverde (URU)', 'Harry Kane (ENG)','Jamal Musiala (GER)', 'Jude Bellingham (ENG)', 'Kai Havertz (GER)','Kevin De Bruyne (BEL)', 'Kylian Mbappé (FRA)', 'Lamine Yamal (ESP)', 'Lionel Messi (ARG)','Luka Modric (CRO)', 'Michael Olise (FRA)', 'Mohamed Salah (EGY)','Rodri (ESP)', 'Vinicius Jr. (BRA)', 'Muu pelaaja']
+    },
   { id:'golden_glove', icon:'🧤', title:'Paras maalivahti',
     desc:'Adidas Golden Glove — kisojen paras torjuja',
-    opts:['Emiliano Martínez (ARG)','Thibaut Courtois (BEL)','Manuel Neuer (GER)','Alisson (BRA)','Ederson (BRA)','Mike Maignan (FRA)','Gianluigi Donnarumma (ITA)','Jordan Pickford (ENG)','Jan Oblak (SLO)','Yassine Bounou (MAR)','Unai Simón (ESP)','David Raya (ESP)','André Onana (CMR)','Muu pelaaja'] },
+      opts: ['Alisson (BRA)', 'David Raya (ESP)', 'Diogo Costa (POR)', 'Edouard Mendy (SEN)', 'Emiliano Martínez (ARG)', 'Jordan Pickford (ENG)', 'Manuel Neuer (GER)', 'Matt Freese (USA)','Mike Maignan (FRA)','Sergio Rochet (URU)','Thibaut Courtois (BEL)','Unai Simón (ESP)','Yassine Bounou (MOR)','Zion Suzuki (JPN)','Muu pelaaja'] },
   { id:'best_young', icon:'🌟', title:'Paras nuori pelaaja',
     desc:'FIFA Best Young Player — alle 21-vuotiaat',
-    opts:['Lamine Yamal (ESP)','Florian Wirtz (GER)','Pedri (ESP)','Gavi (ESP)','Bukayo Saka (ENG)','Warren Zaïre-Emery (FRA)','Endrick (BRA)','Alejandro Garnacho (ARG)','Kobbie Mainoo (ENG)','Antonio Silva (POR)','Nuno Mendes (POR)','Muu pelaaja'] },
+    opts: ['Antonio Nusa (NOR)', 'Arda Güler (TUR)', 'Desire Doue (FRA)', 'Endrick (BRA)','Franco Mastantuono (ARG)','Gilberto Mora (MEX)','Ibrahim Mbaye (SEN)','Lamine Yamal (ESP)','Nestory Irankunda (AUS)','Pau Cubarsi (ESP)','Nico O\'Reilly (ENG)','Warren Zaïre-Emery (FRA)','Yan Diomande (CIV)','Muu pelaaja'] },
   { id:'fair_play', icon:'🤝', title:'Reilun pelin palkinto',
     desc:'FIFA Fair Play Award — siistimmin pelannut joukkue',
-    opts:['Argentiina','Ranska','Espanja','Brasilia','Englanti','Portugali','Saksa','Alankomaat','Japani','Marokko','Uruguay','USA','Meksiko','Kanada','Senegal','Muu joukkue'] },
+      opts: ['Algeria', 'Argentiina','Australia', 'Belgia','Bosnia-Hertsegovina', 'Brasilia', 'Curaçao','Ecuador', 'Egypti', 'Englanti', 'Espanja', 'Etelä-Afrikka', 'Etelä-Korea', 'Ghana', 'Haiti', 'Hollanti', 'Iran', 'Irak', 'Itävalta', 'Japani', 'Jordania', 'Kanada', 'Kap Verde', 'Kolumbia', 'Kongon demokraattinen tasavalta', 'Kroatia', 'Marokko', 'Meksiko', 'Norja', 'Norsunluurannikko','Panama','Paraguay', 'Portugali', 'Qatar', 'Ranska', 'Ruotsi', 'Saksa', 'Saudi-Arabia', 'Senegal','Skotlanti', 'Sveitsi','Tsekki' ,'Tunisia','Turkki','Uruguay','USA', 'Uusi-Seelanti','Uzbekistan'] },
 ];
 
 // Pudotuspeli: 32 joukkuetta → 16 ottelua R32, sitten normaali bracket
-const R32_SLOTS = Array.from({length:16}, (_,i) => ({
-  id: `r32-${i}`,
-  teamA: { name: `1${String.fromCharCode(65+Math.floor(i/2))}`, flag:'🏳️' },
-  teamB: { name: `2${String.fromCharCode(65+Math.floor(i/2)%8+8)}`, flag:'🏳️' },
-}));
+//const R32_SLOTS = Array.from({length:16}, (_,i) => ({
+//  id: `r32-${i}`,
+//  teamA: { name: `1${String.fromCharCode(65+Math.floor(i/2))}`, flag:'🏳️' },
+//  teamB: { name: `2${String.fromCharCode(65+Math.floor(i/2)%8+8)}`, flag:'🏳️' },
+//}));
+
+    const R32_SLOTS = [
+        {
+            id: `r32-0`,
+            teamA: { name: 'E1', flag: '' },
+            teamB: { name: '3', flag: '' },
+        },
+        {
+            id: `r32-1`,
+            teamA: { name: 'I1', flag: '' },
+            teamB: { name: '3', flag: '' },
+        },
+        {
+            id: `r32-2`,
+            teamA: { name: 'A2', flag: '' },
+            teamB: { name: 'B2', flag: '' },
+        },
+        {
+            id: `r32-3`,
+            teamA: { name: 'F1', flag: '' },
+            teamB: { name: 'C2', flag: '' },
+        },
+        {
+            id: `r32-4`,
+            teamA: { name: 'K2', flag: '' },
+            teamB: { name: 'L2', flag: '' },
+        },
+        {
+            id: `r32-5`,
+            teamA: { name: 'H1', flag: '' },
+            teamB: { name: 'J2', flag: '' },
+        },
+        {
+            id: `r32-6`,
+            teamA: { name: 'D1', flag: '' },
+            teamB: { name: '3', flag: '' },
+        },
+        {
+            id: `r32-7`,
+            teamA: { name: 'G1', flag: '' },
+            teamB: { name: '3', flag: '' },
+        },
+        {
+            id: `r32-8`,
+            teamA: { name: 'C1', flag: '' },
+            teamB: { name: 'F2', flag: '' },
+        },
+        {
+            id: `r32-9`,
+            teamA: { name: 'E2', flag: '' },
+            teamB: { name: 'I2', flag: '' },
+        },
+        {
+            id: `r32-10`,
+            teamA: { name: 'A1', flag: '' },
+            teamB: { name: '3', flag: '' },
+        },
+        {
+            id: `r32-11`,
+            teamA: { name: 'L1', flag: '' },
+            teamB: { name: '3', flag: '' },
+        },
+        {
+            id: `r32-12`,
+            teamA: { name: 'J1', flag: '' },
+            teamB: { name: 'H2', flag: '' },
+        },
+        {
+            id: `r32-13`,
+            teamA: { name: 'D2', flag: '' },
+            teamB: { name: 'G2', flag: '' },
+        },
+        {
+            id: `r32-14`,
+            teamA: { name: 'B1', flag: '' },
+            teamB: { name: '3', flag: '' },
+        },
+        {
+            id: `r32-15`,
+            teamA: { name: 'K1', flag: '' },
+            teamB: { name: '3', flag: '' },
+        },
+    ];
 
 const KO_ROUNDS = [
   { id:'r32', label:'Kierros 32',          count:16 },
@@ -1023,7 +1108,7 @@ function renderBracket() {
   const SVG_NS   = 'http://www.w3.org/2000/svg';
   const COL_W    = 140;
   const GAP_X    = 28;
-  const MATCH_H  = 56;
+  const MATCH_H  = 60; //56;
   const HEADER   = 44;
   const PAD_L    = 16;
   const PAD_BOT  = 70;
