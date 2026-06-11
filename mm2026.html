@@ -256,6 +256,23 @@
             display: block;
         }
 
+    .countdown-container {
+        position: absolute;
+        top: 60px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        margin: 0 auto;
+        text-align: center;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.25rem;
+    }
+
+        .countdown-container span {
+            display: block;
+        }
+
     #countdown {
         color: red;
         font-size: 1.1rem;
@@ -292,7 +309,14 @@
         background: rgba(0,0,0,.4);
         z-index: 10;
         top: 100px;
+        height: 1500px;
     }
+        .group-overlay {
+            height: 3500px;
+        }
+        .awards-overlay {
+            height: 1500px;
+        }
 
     .overlay-message {
         background: var(--surface);
@@ -660,6 +684,30 @@
             margin-bottom: 1rem;
         }
 
+    .scores-info-points {
+        text-align: left;
+        display: block;
+        margin: 20px auto;
+        width: 60%;
+        font-size: .85rem;
+    }
+
+        .scores-info-points ul {
+            list-style: none;
+            margin-top: 15px;
+            font-size: .75rem;
+        }
+
+            .scores-info-points ul li {
+                display: flex;
+                justify-content: space-between;
+            }
+
+                .scores-info-points ul li span.bold {
+                    font-weight: bold;
+                    white-space: nowrap;
+                }
+
     .sheets-input-row {
         display: flex;
         gap: .5rem;
@@ -841,7 +889,7 @@
           MM <span>2026</span>
           
       </div>
-      <div>
+      <div class="countdown-container">
           <span class="countdown-label">Aikaa jäljellä:</span>
           <span id="countdown"></span>
       </div>
@@ -917,8 +965,19 @@
         <span class="hint">Hakee tulokset Google Sheetsistä</span>
       </div>
       <div class="scores-info">
-        <div class="sheets-input-row">
+        <div>
           <button class="sheets-fetch-btn" id="fetch-btn" onclick="fetchScores()">PÄIVITÄ PISTETAULUKKO</button>
+            <div class="scores-info-points">
+                <h3>PISTEYTYS</h3>
+                <ul>
+                    <li><span>Jokainen täysin oikein veikattu alkulohko: </span><span class="bold">2 pistettä</span></li>
+                    <li><span>Oikein veikattu paras maalintekijä: </span><span class="bold">6 pistettä</span></li>
+                    <li><span>Oikein veikattu paras pelaaja: </span><span class="bold">5 pistettä</span></li>
+                    <li><span>Oikein veikattu paras maalivahti: </span><span class="bold">4 pistettä</span></li>
+                    <li><span>Oikein veikattu paras nuori pelaaja: </span><span class="bold">4 pistettä</span></li>
+                    <li><span>Oikein veikattu reilun pelin palkinto: </span><span class="bold">3 pistettä</span></li>
+                </ul>
+            </div>
         </div>
         <div id="sheets-error" class="error-box" style="display:none"></div>
       </div>
