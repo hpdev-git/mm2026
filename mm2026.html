@@ -708,6 +708,12 @@
                     white-space: nowrap;
                 }
 
+    .scores-info-hint {
+        margin-top: 20px;
+        color: var(--muted);
+        font-size: .75rem;
+    }
+
     .sheets-input-row {
         display: flex;
         gap: .5rem;
@@ -889,7 +895,7 @@
           MM <span>2026</span>
           
       </div>
-      <div class="countdown-container">
+      <div class="countdown-container" style="display:none;">
           <span class="countdown-label">Aikaa jäljellä:</span>
           <span id="countdown"></span>
       </div>
@@ -978,6 +984,7 @@
                     <li><span>Oikein veikattu reilun pelin palkinto: </span><span class="bold">3 pistettä</span></li>
                 </ul>
             </div>
+            <span class="scores-info-hint">Taulukossa alustava pistetilanne 12.6.</span>
         </div>
         <div id="sheets-error" class="error-box" style="display:none"></div>
       </div>
