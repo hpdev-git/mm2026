@@ -311,21 +311,26 @@
         top: 100px;
         height: 1500px;
     }
-        .group-overlay {
-            height: 3500px;
-        }
-        .awards-overlay {
-            height: 1500px;
-        }
+
+    .group-overlay {
+        height: 3500px;
+    }
+
+    .awards-overlay {
+        height: 1500px;
+    }
 
     .overlay-message {
+        position: fixed;
+        left: 50%;
+        top: 50%;
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius);
         padding: 1.25rem;
         text-align: center;
         width: 60%;
-        margin: 5rem auto;
+        transform: translate(-50%, -50%);
     }
 
         .overlay-message h2 {
@@ -335,6 +340,17 @@
         .overlay-message .hint {
             font-size: .75rem;
         }
+
+    .overlay-close {
+        position: absolute;
+        height: 14px;
+        width: 14px;
+        top: .5rem;
+        right: .5rem;
+        cursor: pointer;
+        background-image: url("img/x_white.svg");
+        background-repeat: no-repeat;
+    }
 
     .groups-grid {
         display: grid;
@@ -688,7 +704,7 @@
         text-align: left;
         display: block;
         margin: 20px auto;
-        width: 80%;
+        width: 60%;
         font-size: .85rem;
     }
 
@@ -884,7 +900,7 @@
     <p class="gate-sub">Yhdysvallat · Kanada · Meksiko</p>
     <input id="nick-input" class="gate-input" type="text"
       placeholder="Nimimerkkisi" maxlength="24" autocomplete="off" spellcheck="false">
-    <button class="gate-btn" onclick="enterApp()">ALOITA ENNUSTAMINEN →</button>
+    <button id="startButton" class="gate-btn" onclick="enterApp()">ALOITA ENNUSTAMINEN →</button>
   </div>
 </div>
 
@@ -917,7 +933,8 @@
     <!-- ── VIEW: LOHKOT ─────────────────────── -->
     <div class="view active" id="view-groups">
       <div class="group-overlay" style="display: none;">
-          <div class="overlay-message">
+          <div id="group-overlay-message" class="overlay-message">
+              <span class="overlay-close" onclick="getElementById('group-overlay-message').style.display = 'none';"></span>
               <h2>Lohkovaiheen veikkausten aikaraja umpeutunut</h2>
               <span class="hint">Muutoksia lohkosijoituksiin ei voi enää tehdä</span>
           </div>
@@ -931,10 +948,11 @@
 
     <!-- ── VIEW: PUDOTUSPELIT ───────────────── -->
     <div class="view" id="view-knockout">
-        <div class="ko-overlay" style="display: none;">
-            <div class="overlay-message">
-                <h2>Pudotuspelien veikkausten aikaraja umpeutunut</h2>
-                <span class="hint">Muutoksia ei voi enää tehdä</span>
+        <div class="ko-overlay">
+            <div id="ko-overlay-message" class="overlay-message">
+                <span class="overlay-close" onclick="getElementById('ko-overlay-message').style.display = 'none';"></span>
+                <h2>Pudotuspelien veikkaus avautuu 28.6.</h2>
+                <span class="hint"></span>
             </div>
         </div>
         <div class="section-head">
@@ -952,7 +970,8 @@
     <!-- ── VIEW: PALKINNOT ──────────────────── -->
     <div class="view" id="view-awards">
         <div class="awards-overlay" style="display: none;">
-            <div class="overlay-message">
+            <div id="awards-overlay-message" class="overlay-message">
+                <span class="overlay-close" onclick="getElementById('awards-overlay-message').style.display = 'none';"></span>
                 <h2>Palkintojen veikkausten aikaraja umpeutunut</h2>
                 <span class="hint">Muutoksia ei voi enää tehdä</span>
             </div>
@@ -971,21 +990,21 @@
         <span class="hint">Hakee tulokset Google Sheetsistä</span>
       </div>
       <div class="scores-info">
-        <div>
-          <button class="sheets-fetch-btn" id="fetch-btn" onclick="fetchScores()">PÄIVITÄ PISTETAULUKKO</button>
-            <div class="scores-info-points">
-                <h3>PISTEYTYS</h3>
-                <ul>
-                    <li><span>Jokainen täysin oikein veikattu alkulohko: </span><span class="bold">2 pistettä</span></li>
-                    <li><span>Oikein veikattu paras maalintekijä: </span><span class="bold">6 pistettä</span></li>
-                    <li><span>Oikein veikattu paras pelaaja: </span><span class="bold">5 pistettä</span></li>
-                    <li><span>Oikein veikattu paras maalivahti: </span><span class="bold">4 pistettä</span></li>
-                    <li><span>Oikein veikattu paras nuori pelaaja: </span><span class="bold">4 pistettä</span></li>
-                    <li><span>Oikein veikattu reilun pelin palkinto: </span><span class="bold">3 pistettä</span></li>
-                </ul>
-            </div>
-            <span class="scores-info-hint">Taulukossa alustava pistetilanne 12.6.</span>
-        </div>
+          <div>
+              <button class="sheets-fetch-btn" id="fetch-btn" onclick="fetchScores()">PÄIVITÄ PISTETAULUKKO</button>
+              <div class="scores-info-points">
+                  <h3>PISTEYTYS</h3>
+                  <ul>
+                      <li><span>Jokainen täysin oikein veikattu alkulohko: </span><span class="bold">2 pistettä</span></li>
+                      <li><span>Oikein veikattu paras maalintekijä: </span><span class="bold">6 pistettä</span></li>
+                      <li><span>Oikein veikattu paras pelaaja: </span><span class="bold">5 pistettä</span></li>
+                      <li><span>Oikein veikattu paras maalivahti: </span><span class="bold">4 pistettä</span></li>
+                      <li><span>Oikein veikattu paras nuori pelaaja: </span><span class="bold">4 pistettä</span></li>
+                      <li><span>Oikein veikattu reilun pelin palkinto: </span><span class="bold">3 pistettä</span></li>
+                  </ul>
+              </div>
+              <span class="scores-info-hint">Taulukossa alustava pistetilanne 15.6.</span>
+          </div>
         <div id="sheets-error" class="error-box" style="display:none"></div>
       </div>
       <div id="scores-table-wrap"></div>
@@ -1232,7 +1251,8 @@
         { id: 'r16', label: 'Kierros 16', count: 8 },
         { id: 'qf', label: 'Puolivälierät', count: 4 },
         { id: 'sf', label: 'Välierät', count: 2 },
-        { id: 'f', label: 'Finaali', count: 1 },
+        //{ id: 'b', label: 'Pronssiottelu', count: 1 },
+        { id: 'f', label: 'Finaali/Pronssiottelu', count: 2 },
     ];
 
     // ── STATE ─────────────────────────────────────────────
@@ -1378,6 +1398,7 @@
         if (saved) {
             document.getElementById('nick-input').value = saved;
             nick = saved;
+            document.getElementById('startButton').innerHTML = "TARKISTA ENNUSTEESI →";
         }
     })();
 
@@ -1652,9 +1673,24 @@
         cbox.style.top = (finCy + MATCH_H / 2 + 10) + 'px';
         cbox.style.width = '80px';
         cbox.innerHTML = `<span class="champion-trophy">${champ ? '🏆' : '🥇'}</span>
-    ${champ ? `<span class="champion-name">${champ.flag} ${champ.name}</span>` : ''}`;
+        ${champ ? `<span class="champion-name">${champ.flag} ${champ.name}</span>` : ''}`;
         td.appendChild(cbox);
+
+        // pronssiottelu box
+        const bronze = koPreds['b-0']; //veikattu pronssijoukkue
+        const bCol = PAD_L + (KO_ROUNDS.length - 1) * (COL_W + GAP_X);
+        const bCy = cy[KO_ROUNDS.length - 1][0];
+        const bbox = document.createElement('div');
+        bbox.className = 'bronze-box';
+        bbox.style.left = (bCol + COL_W / 2 - 40) + 'px';
+        bbox.style.top = (bCy + MATCH_H / 2 + 10) + 'px';
+        bbox.style.width = '80px';
+        bbox.innerHTML = `<span class="champion-trophy">${bronze ? '🏆' : '🥉'}</span>
+${bronze ? `<span class="champion-name">${bronze.flag} ${bronze.name}</span>` : ''}`;
+        td.appendChild(bbox);
     }
+
+
 
     // ── AWARDS ────────────────────────────────────────────
     function buildAwards() {
