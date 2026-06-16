@@ -925,7 +925,7 @@
     <button class="active" data-view="groups"   onclick="showView('groups')">🌍 LOHKOT</button>
     <button               data-view="knockout" onclick="showView('knockout')" disabled>🏆 PUDOTUSPELIT</button>
     <button               data-view="awards"   onclick="showView('awards')">⭐ PALKINNOT</button>
-    <button               data-view="scores"   onclick="showView('scores')">📊 PISTEET</button>
+    <button               data-view="scores"   onclick="showView('scores')">📊 PISTETAULUKKO</button>
   </nav>
 
   <main>
@@ -1003,7 +1003,7 @@
                       <li><span>Oikein veikattu reilun pelin palkinto: </span><span class="bold">3 pistettä</span></li>
                   </ul>
               </div>
-              <span class="scores-info-hint">Taulukossa alustava pistetilanne 15.6.</span>
+              <span class="scores-info-hint">Taulukossa alustava pistetilanne 16.6.</span>
           </div>
         <div id="sheets-error" class="error-box" style="display:none"></div>
       </div>
@@ -1050,7 +1050,7 @@
 
     const timer = setInterval(updateCountdown, 1000);
     updateCountdown();
-    
+
 
 
     const GROUPS = {
@@ -1399,6 +1399,8 @@
             document.getElementById('nick-input').value = saved;
             nick = saved;
             document.getElementById('startButton').innerHTML = "TARKISTA ENNUSTEESI →";
+            //mennään suoraan eteenpäin
+            enterApp();
         }
     })();
 
@@ -1407,7 +1409,12 @@
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.view === id));
         document.getElementById('view-' + id).classList.add('active');
-        if (id === 'knockout') renderBracket();
+        if (id === 'knockout') {
+            renderBracket();
+        }
+        else if (id == 'scores') {
+            fetchScores();
+        }
     }
 
     // ── BUILD ALL ─────────────────────────────────────────
@@ -1803,7 +1810,7 @@ ${bronze ? `<span class="champion-name">${bronze.flag} ${bronze.name}</span>` : 
             errBox.style.display = 'block';
         } finally {
             fetchBtn.disabled = false;
-            fetchBtn.textContent = 'HAE PISTEET';
+            fetchBtn.textContent = 'PÄIVITÄ PISTETAULUKKO';
         }
     }
 
