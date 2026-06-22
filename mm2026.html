@@ -42,6 +42,10 @@
         min-height: 100vh;
     }
 
+    .block {
+        display: block;
+    }
+
     /* ── NICKNAME GATE ──────────────────────────────────── */
     #gate {
         position: fixed;
@@ -275,6 +279,11 @@
 
     #countdown {
         color: red;
+        font-size: 1.1rem;
+    }
+
+    #ko-countdown {
+        color: forestgreen;
         font-size: 1.1rem;
     }
 
@@ -538,10 +547,24 @@
             box-shadow: 0 0 8px rgba(227,179,65,.25);
         }
 
+        .b-team.bronze {
+            background: rgba(205,127,50,.18);
+            border-color: #cd7f32;
+            color: #d29922;
+            font-weight: 700;
+            box-shadow: 0 0 8px rgba(205,127,50,.18);
+        }
+
     .b-flag {
         font-size: .95rem;
         flex-shrink: 0;
+        width: 17px;
     }
+
+        .b-flag img {
+            display: block;
+            width: 17px;
+        }
 
     .b-name {
         overflow: hidden;
@@ -558,7 +581,8 @@
         color: var(--muted);
     }
 
-    .champion-box {
+    .champion-box,
+    .bronze-box {
         position: absolute;
         text-align: center;
         pointer-events: none;
@@ -576,6 +600,10 @@
         color: var(--gold);
         display: block;
         margin-top: .15rem;
+    }
+
+    .bronze-box .champion-name {
+        color: #cd7f32;
     }
 
     /* ── AWARDS ─────────────────────────────────────────── */
@@ -923,7 +951,7 @@
 
   <nav>
     <button class="active" data-view="groups"   onclick="showView('groups')">🌍 LOHKOT</button>
-    <button               data-view="knockout" onclick="showView('knockout')" disabled>🏆 PUDOTUSPELIT</button>
+    <button               data-view="knockout" onclick="showView('knockout')">🏆 PUDOTUSPELIT</button>
     <button               data-view="awards"   onclick="showView('awards')">⭐ PALKINNOT</button>
     <button               data-view="scores"   onclick="showView('scores')">📊 PISTETAULUKKO</button>
   </nav>
@@ -952,7 +980,9 @@
             <div id="ko-overlay-message" class="overlay-message">
                 <span class="overlay-close" onclick="getElementById('ko-overlay-message').style.display = 'none';"></span>
                 <h2>Pudotuspelien veikkaus avautuu 28.6.</h2>
-                <span class="hint"></span>
+                <span class="hint">Pudotuspelien veikkauksessa valitse otteluparien voittaja</span>
+                <span class="countdown-label block">Valintojen avautumiseen aikaa:</span>
+                <span id="ko-countdown"></span>
             </div>
         </div>
         <div class="section-head">
@@ -1019,9 +1049,11 @@
     // ── DATA ──────────────────────────────────────────────
 
     const DEADLINE = new Date('2026-06-11T18:00:00Z'); // ensimmäinen ottelu alkaa 11.6.2026 klo 22:00 Suomen aikaa -> deadline tuntia ennen
+    const KO_OPEN = new Date('2026-06-28T00:00:00Z'); //pudotuspelien veikkaus aukeaa 28.6.
     const KO_DEADLINE = new Date('2026-06-28T18:00:00Z'); //pudotuspelit alkavat 28.6. klo 22:00 Suomen aikaa -> deadline tuntia ennen
 
     // COUNTDOWN
+    const kocountdown = document.getElementById('ko-countdown');
     const countdown = document.getElementById('countdown');
     function pad(value) {
         return String(value).padStart(2, '0');
@@ -1029,10 +1061,11 @@
 
     function updateCountdown() {
         const now = new Date();
-        const diff = DEADLINE - now;
+        //const diff = DEADLINE - now;
+        const diff = KO_OPEN - now;
 
         if (diff <= 0) {
-            countdown.textContent = '00:00:00:00';
+            kocountdown.textContent = '00:00:00:00';
             clearInterval(timer);
             return;
         }
@@ -1044,7 +1077,7 @@
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
 
-        countdown.textContent =
+        kocountdown.textContent =
             `${days}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
     }
 
@@ -1166,7 +1199,7 @@
     const R32_SLOTS = [
         {
             id: `r32-0`,
-            teamA: { name: 'E1', flag: '' },
+            teamA: { name: 'Saksa', flag: 'de' },
             teamB: { name: '3', flag: '' },
         },
         {
@@ -1196,7 +1229,7 @@
         },
         {
             id: `r32-6`,
-            teamA: { name: 'D1', flag: '' },
+            teamA: { name: 'USA', flag: 'us' },
             teamB: { name: '3', flag: '' },
         },
         {
@@ -1216,7 +1249,7 @@
         },
         {
             id: `r32-10`,
-            teamA: { name: 'A1', flag: '' },
+            teamA: { name: 'Meksiko', flag: 'mx' },
             teamB: { name: '3', flag: '' },
         },
         {
@@ -1251,8 +1284,11 @@
         { id: 'r16', label: 'Kierros 16', count: 8 },
         { id: 'qf', label: 'Puolivälierät', count: 4 },
         { id: 'sf', label: 'Välierät', count: 2 },
-        //{ id: 'b', label: 'Pronssiottelu', count: 1 },
-        { id: 'f', label: 'Finaali/Pronssiottelu', count: 2 },
+    ];
+
+    const KO_FINALS = [
+        { id: 'f', label: 'Finaali', count: 1 },
+        { id: 'b', label: 'Pronssiottelu', count: 1 },
     ];
 
     // ── STATE ─────────────────────────────────────────────
@@ -1557,10 +1593,107 @@
         return { teamA: wA || null, teamB: wB || null };
     }
 
+    function sameTeam(a, b) {
+        return !!a && !!b && a.name === b.name;
+    }
+
+    function teamMarkup(team) {
+        const flag = team.flag
+            ? '<span class="b-flag"><img src="img/' + team.flag + '.svg" alt="' + team.flag + '"></span>'
+            : '<span class="b-flag"></span>';
+        return flag + '<span class="b-name">' + team.name + '</span>';
+    }
+
+    function predictionFitsMatch(roundId, mi) {
+        const roundIndex = KO_ROUNDS.findIndex(r => r.id === roundId);
+        if (roundIndex < 0) return true;
+
+        const winner = koPreds[roundId + '-' + mi];
+        if (!winner) return true;
+
+        const { teamA, teamB } = getKoTeams(roundIndex, mi);
+        return sameTeam(winner, teamA) || sameTeam(winner, teamB);
+    }
+
+    function predictionFitsFinal(finalId) {
+        const winner = koPreds[finalId + '-0'];
+        if (!winner) return true;
+
+        const { teamA, teamB } = getFinalTeams(finalId);
+        return sameTeam(winner, teamA) || sameTeam(winner, teamB);
+    }
+
+    function pruneKoPredictions() {
+        KO_ROUNDS.forEach(rnd => {
+            for (let mi = 0; mi < rnd.count; mi++) {
+                if (!predictionFitsMatch(rnd.id, mi)) {
+                    delete koPreds[rnd.id + '-' + mi];
+                }
+            }
+        });
+
+        KO_FINALS.forEach(final => {
+            if (!predictionFitsFinal(final.id)) {
+                delete koPreds[final.id + '-0'];
+            }
+        });
+
+        delete koPreds['f-1'];
+        delete koPreds['b-1'];
+    }
+
     function pickKoWinner(roundId, mi, team) {
         koPreds[roundId + '-' + mi] = team;
+        pruneKoPredictions();
         persist();
         renderBracket();
+    }
+
+    function renderMatchCard(container, x, centerY, roundId, mi, teams, opts = {}) {
+        const winner = koPreds[roundId + '-' + mi];
+        const matchDiv = document.createElement('div');
+        matchDiv.className = 'b-match';
+        matchDiv.style.left = x + 'px';
+        matchDiv.style.top = (centerY - opts.matchH / 2 + 2) + 'px';
+
+        [teams.teamA, teams.teamB].forEach(team => {
+            const btn = document.createElement('div');
+            btn.className = 'b-team';
+
+            if (!team) {
+                btn.classList.add('tbd');
+                btn.innerHTML = '<span class="b-name">TBD</span>';
+            } else {
+                const isW = sameTeam(winner, team);
+                if (isW && opts.medal === 'gold') btn.classList.add('champion');
+                else if (isW && opts.medal === 'bronze') btn.classList.add('bronze');
+                else if (isW) btn.classList.add('winner');
+
+                btn.innerHTML = teamMarkup(team);
+                btn.title = 'Valitse voittajaksi';
+                btn.onclick = () => pickKoWinner(roundId, mi, team);
+            }
+
+            matchDiv.appendChild(btn);
+        });
+
+        container.appendChild(matchDiv);
+    }
+
+    function renderMedalBox(container, x, top, team, medal) {
+        const box = document.createElement('div');
+        box.className = medal === 'gold' ? 'champion-box' : 'bronze-box';
+        box.style.left = x + 'px';
+        box.style.top = top + 'px';
+        box.style.width = '80px';
+
+        const icon = medal === 'gold'
+            ? (team ? '&#127942;' : '&#129351;')
+            : '&#129353;';
+        const name = team ? '<span class="champion-name">' + team.name + '</span>' : '';
+        box.innerHTML = '<span class="champion-trophy">' + icon + '</span>' + name;
+
+        container.appendChild(box);
     }
 
     function renderBracket() {
@@ -1574,7 +1707,8 @@
 
         const maxMatches = KO_ROUNDS[0].count; // 16
         const SVG_H = HEADER + maxMatches * MATCH_H + PAD_BOT;
-        const SVG_W = KO_ROUNDS.length * (COL_W + GAP_X) + PAD_L * 2;
+        const SVG_W = (KO_ROUNDS.length + 1) * (COL_W + GAP_X) + PAD_L * 2;
+        const available = SVG_H - HEADER - PAD_BOT;
 
         const svg = document.getElementById('bracket-svg');
         const wrap = document.getElementById('bracket-wrap');
@@ -1588,9 +1722,30 @@
         svg.innerHTML = '';
         td.innerHTML = '';
 
+        const line = (x1, y1, x2, y2, stroke = '#30363d') => {
+            const l = document.createElementNS(SVG_NS, 'line');
+            l.setAttribute('x1', x1); l.setAttribute('y1', y1);
+            l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+            l.setAttribute('stroke', stroke);
+            l.setAttribute('stroke-width', '1.5');
+            svg.appendChild(l);
+        };
+
+        const label = (text, x, y, fill = '#7d8590', size = '9.5') => {
+            const lbl = document.createElementNS(SVG_NS, 'text');
+            lbl.setAttribute('x', x);
+            lbl.setAttribute('y', y);
+            lbl.setAttribute('text-anchor', 'middle');
+            lbl.setAttribute('font-size', size);
+            lbl.setAttribute('font-weight', '700');
+            lbl.setAttribute('fill', fill);
+            lbl.setAttribute('letter-spacing', '0.07');
+            lbl.textContent = text.toUpperCase();
+            svg.appendChild(lbl);
+        };
+
         // calc center Y per match
         const cy = KO_ROUNDS.map((rnd, ri) => {
-            const available = SVG_H - HEADER - PAD_BOT;
             const step = available / rnd.count;
             return Array.from({ length: rnd.count }, (_, mi) =>
                 HEADER + step * mi + step / 2
@@ -1609,14 +1764,6 @@
                 const srcB = cy[ri - 1][mi * 2 + 1];
                 const dest = cy[ri][mi];
 
-                const line = (x1, y1, x2, y2) => {
-                    const l = document.createElementNS(SVG_NS, 'line');
-                    l.setAttribute('x1', x1); l.setAttribute('y1', y1);
-                    l.setAttribute('x2', x2); l.setAttribute('y2', y2);
-                    l.setAttribute('stroke', '#30363d');
-                    l.setAttribute('stroke-width', '1.5');
-                    svg.appendChild(l);
-                };
                 line(prevColX + COL_W, srcA, midX, srcA);
                 line(prevColX + COL_W, srcB, midX, srcB);
                 line(midX, srcA, midX, srcB);
@@ -1629,74 +1776,86 @@
             const colX = PAD_L + ri * (COL_W + GAP_X);
 
             // round label
-            const lbl = document.createElementNS(SVG_NS, 'text');
-            lbl.setAttribute('x', colX + COL_W / 2);
-            lbl.setAttribute('y', 20);
-            lbl.setAttribute('text-anchor', 'middle');
-            lbl.setAttribute('font-size', '9.5');
-            lbl.setAttribute('font-weight', '700');
-            lbl.setAttribute('fill', ri === KO_ROUNDS.length - 1 ? '#e3b341' : '#7d8590');
-            lbl.setAttribute('letter-spacing', '0.07');
-            lbl.textContent = rnd.label.toUpperCase();
-            svg.appendChild(lbl);
+            label(rnd.label, colX + COL_W / 2, 20);
 
             for (let mi = 0; mi < rnd.count; mi++) {
-                const { teamA, teamB } = getKoTeams(ri, mi);
-                const winner = koPreds[rnd.id + '-' + mi];
-                const isFinal = ri === KO_ROUNDS.length - 1;
-
-                const matchDiv = document.createElement('div');
-                matchDiv.className = 'b-match';
-                matchDiv.style.left = colX + 'px';
-                matchDiv.style.top = (cy[ri][mi] - MATCH_H / 2 + 2) + 'px';
-
-                [teamA, teamB].forEach(team => {
-                    const btn = document.createElement('div');
-                    btn.className = 'b-team';
-                    if (!team) {
-                        btn.classList.add('tbd');
-                        btn.innerHTML = '<span class="b-name">TBD</span>';
-                    } else {
-                        const isW = winner && winner.name === team.name;
-                        if (isW && isFinal) btn.classList.add('champion');
-                        else if (isW) btn.classList.add('winner');
-                        btn.innerHTML = `<span class="b-flag">${team.flag}</span><span class="b-name">${team.name}</span>`;
-                        btn.title = 'Valitse voittajaksi';
-                        btn.onclick = () => pickKoWinner(rnd.id, mi, team);
-                    }
-                    matchDiv.appendChild(btn);
+                renderMatchCard(td, colX, cy[ri][mi], rnd.id, mi, getKoTeams(ri, mi), {
+                    matchH: MATCH_H,
                 });
-                td.appendChild(matchDiv);
             }
         });
 
-        // champion box
-        const champ = koPreds['f-0'];
-        const finCol = PAD_L + (KO_ROUNDS.length - 1) * (COL_W + GAP_X);
-        const finCy = cy[KO_ROUNDS.length - 1][0];
-        const cbox = document.createElement('div');
-        cbox.className = 'champion-box';
-        cbox.style.left = (finCol + COL_W / 2 - 40) + 'px';
-        cbox.style.top = (finCy + MATCH_H / 2 + 10) + 'px';
-        cbox.style.width = '80px';
-        cbox.innerHTML = `<span class="champion-trophy">${champ ? '🏆' : '🥇'}</span>
-        ${champ ? `<span class="champion-name">${champ.flag} ${champ.name}</span>` : ''}`;
-        td.appendChild(cbox);
+        // draw final and bronze match as a separate medal column
+        const sfRi = KO_ROUNDS.length - 1;
+        const sfColX = PAD_L + sfRi * (COL_W + GAP_X);
+        const finalsColX = PAD_L + KO_ROUNDS.length * (COL_W + GAP_X);
+        const finalMidX = sfColX + COL_W + GAP_X / 2;
+        const medalY = {
+            f: HEADER + available / 2 - 120,
+            b: HEADER + available / 2 + 120,
+        };
 
-        // pronssiottelu box
-        const bronze = koPreds['b-0']; //veikattu pronssijoukkue
-        const bCol = PAD_L + (KO_ROUNDS.length - 1) * (COL_W + GAP_X);
-        const bCy = cy[KO_ROUNDS.length - 1][0];
-        const bbox = document.createElement('div');
-        bbox.className = 'bronze-box';
-        bbox.style.left = (bCol + COL_W / 2 - 40) + 'px';
-        bbox.style.top = (bCy + MATCH_H / 2 + 10) + 'px';
-        bbox.style.width = '80px';
-        bbox.innerHTML = `<span class="champion-trophy">${bronze ? '🏆' : '🥉'}</span>
-${bronze ? `<span class="champion-name">${bronze.flag} ${bronze.name}</span>` : ''}`;
-        td.appendChild(bbox);
+        label('Mitalipelit', finalsColX + COL_W / 2, 20, '#e3b341');
+
+        if (cy[sfRi] && cy[sfRi].length === 2) {
+            line(sfColX + COL_W, cy[sfRi][0], finalMidX, cy[sfRi][0]);
+            line(sfColX + COL_W, cy[sfRi][1], finalMidX, cy[sfRi][1]);
+            line(finalMidX, cy[sfRi][0], finalMidX, cy[sfRi][1]);
+            line(finalMidX, medalY.f, finalsColX, medalY.f);
+            line(finalMidX, medalY.b, finalsColX, medalY.b, '#4a3322');
+        }
+
+        KO_FINALS.forEach(final => {
+            const matchY = medalY[final.id];
+            const medal = final.id === 'f' ? 'gold' : 'bronze';
+            const labelColor = final.id === 'f' ? '#e3b341' : '#cd7f32';
+
+            label(final.label, finalsColX + COL_W / 2, matchY - MATCH_H / 2 - 8, labelColor, '8.2');
+            renderMatchCard(td, finalsColX, matchY, final.id, 0, getFinalTeams(final.id), {
+                matchH: MATCH_H,
+                medal,
+            });
+            renderMedalBox(
+                td,
+                finalsColX + COL_W / 2 - 40,
+                matchY + MATCH_H / 2 + 10,
+                koPreds[final.id + '-0'],
+                medal
+            );
+        });
+
     }
 
+    function getMatchLoser(roundId, mi) {
+        const roundIndex = KO_ROUNDS.findIndex(r => r.id === roundId);
+        if (roundIndex < 0) return null;
+
+        const { teamA, teamB } = getKoTeams(roundIndex, mi);
+        const winner = koPreds[roundId + '-' + mi];
+
+        if (!teamA || !teamB || !winner) return null;
+        if (sameTeam(winner, teamA)) return teamB;
+        if (sameTeam(winner, teamB)) return teamA;
+        return null;
+    }
+
+    function getFinalTeams(finalId) {
+        if (finalId === 'f') {
+            return {
+                teamA: koPreds['sf-0'] || null,
+                teamB: koPreds['sf-1'] || null,
+            };
+        }
+
+        if (finalId === 'b') {
+            return {
+                teamA: getMatchLoser('sf', 0),
+                teamB: getMatchLoser('sf', 1),
+            };
+        }
+
+        return { teamA: null, teamB: null };
+    }
 
 
     // ── AWARDS ────────────────────────────────────────────
