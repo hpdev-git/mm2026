@@ -976,7 +976,7 @@
 
     <!-- ── VIEW: PUDOTUSPELIT ───────────────── -->
     <div class="view" id="view-knockout">
-        <div class="ko-overlay">
+        <div class="ko-overlay" style="display: none;">
             <div id="ko-overlay-message" class="overlay-message">
                 <span class="overlay-close" onclick="getElementById('ko-overlay-message').style.display = 'none';"></span>
                 <h2>Pudotuspelien veikkaus avautuu 28.6.</h2>
@@ -1043,7 +1043,7 @@
                       <li><span>Oikein veikattu mestarijoukkue: </span><span class="bold">8 pistettä</span></li>
                   </ul>
               </div>
-              <span class="scores-info-hint">Taulukossa alustava pistetilanne 25.6.</span>
+              <span class="scores-info-hint">Taulukossa alustava pistetilanne 26.6.</span>
           </div>
         <div id="sheets-error" class="error-box" style="display:none"></div>
       </div>
@@ -1224,7 +1224,7 @@
         },
         {
             id: `r32-3`,
-            teamA: { name: 'F1', flag: '' },
+            teamA: { name: 'Hollanti', flag: 'nl' },
             teamB: { name: 'Marokko', flag: 'ma' },
         },
         {
@@ -1240,7 +1240,7 @@
         {
             id: `r32-6`,
             teamA: { name: 'USA', flag: 'us' },
-            teamB: { name: '3', flag: '' },
+            teamB: { name: 'Bosnia-Hertsegovina', flag: 'ba' },
         },
         {
             id: `r32-7`,
@@ -1250,11 +1250,11 @@
         {
             id: `r32-8`,
             teamA: { name: 'Brasilia', flag: 'br' },
-            teamB: { name: 'F2', flag: '' },
+            teamB: { name: 'Japani', flag: 'jp' },
         },
         {
             id: `r32-9`,
-            teamA: { name: 'E2', flag: '' },
+            teamA: { name: 'Norsunluurannikko', flag: 'ci' },
             teamB: { name: 'I2', flag: '' },
         },
         {
@@ -1274,7 +1274,7 @@
         },
         {
             id: `r32-13`,
-            teamA: { name: 'D2', flag: '' },
+            teamA: { name: 'Australia', flag: 'au' },
             teamB: { name: 'G2', flag: '' },
         },
         {
@@ -1322,20 +1322,20 @@
     // ─────────────────────────────────────────────────────────────────────────
 
     // ▼ Vaihda tähän oma Apps Script Web App -URL ▼
-    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwL-eYqy8f7fRPtFuVJjlqc7U1f8r4rAN17_a0Gp33ljMo_lPQZtgjSOXkN3RvusPj5/exec';
+    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzk7Hj4GriWFadWa-syQT5GkFQsXW06sFEhYuEVcjfikVRwqOvEQT2KyCvoI7BHwCQM/exec';
 
     // Debounce-ajastin — ei lähetetä jokaista drag-liikettä erikseen
     let syncTimer = null;
 
     function persist() {
         //jos deadline mennyt -> skipataan
-        if (Date.now() > DEADLINE)
+        if (Date.now() > DEADLINE && Date.now() > KO_DEADLINE)
             return;
 
         // 1. Tallennetaan aina ensin lokaalisti (nopea, offline-turvallinen)
-        localStorage.setItem('mm26s_groups', JSON.stringify(groupOrder));
+        //localStorage.setItem('mm26s_groups', JSON.stringify(groupOrder));
         localStorage.setItem('mm26s_ko', JSON.stringify(koPreds));
-        localStorage.setItem('mm26s_awards', JSON.stringify(awardsPreds));
+        //localStorage.setItem('mm26s_awards', JSON.stringify(awardsPreds));
         localStorage.setItem('mm26s_sheetsurl', sheetsUrl);
 
         // 2. Lähetetään Sheetsiin debounce-viiveellä (1.5s hiljaisuuden jälkeen)
@@ -1349,9 +1349,9 @@
     async function syncToSheets() {
         const payload = {
             nick,
-            groups: groupOrder,
+            //groups: groupOrder,
             knockout: koPreds,
-            awards: awardsPreds,
+            //awards: awardsPreds,
         };
 
         // Näytä tallennusindikaattori
@@ -1707,6 +1707,9 @@
     }
 
     function renderBracket() {
+        let koOpen = Date.now() > KO_OPEN;
+        let deadlinePassed = Date.now() > KO_DEADLINE;
+
         const SVG_NS = 'http://www.w3.org/2000/svg';
         const COL_W = 140;
         const GAP_X = 28;
@@ -1833,6 +1836,11 @@
                 medal
             );
         });
+
+        if (deadlinePassed || !koOpen) {
+            //overlay
+            document.querySelector('.ko-overlay').style.display = 'block';
+        }
 
     }
 
