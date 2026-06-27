@@ -1332,6 +1332,10 @@
         if (Date.now() > DEADLINE && Date.now() > KO_DEADLINE)
             return;
 
+        //jos ei vielä auki -> skipataan    
+        if (Date.now() < KO_OPEN)
+            return;
+
         // 1. Tallennetaan aina ensin lokaalisti (nopea, offline-turvallinen)
         //localStorage.setItem('mm26s_groups', JSON.stringify(groupOrder));
         localStorage.setItem('mm26s_ko', JSON.stringify(koPreds));
