@@ -939,7 +939,7 @@
           MM <span>2026</span>
           
       </div>
-      <div class="countdown-container" style="display:none;">
+      <div class="countdown-container">
           <span class="countdown-label">Aikaa jäljellä:</span>
           <span id="countdown"></span>
       </div>
@@ -979,10 +979,8 @@
         <div class="ko-overlay" style="display: none;">
             <div id="ko-overlay-message" class="overlay-message">
                 <span class="overlay-close" onclick="getElementById('ko-overlay-message').style.display = 'none';"></span>
-                <h2>Pudotuspelien veikkaus avautuu 28.6.</h2>
-                <span class="hint">Pudotuspelien veikkauksessa valitse otteluparien voittaja</span>
-                <span class="countdown-label block">Valintojen avautumiseen aikaa:</span>
-                <span id="ko-countdown"></span>
+                <h2>Pudotuspelien veikkausten aikaraja umpeutunut</h2>
+                <span class="hint">Muutoksia ei voi enää tehdä</span>
             </div>
         </div>
         <div class="section-head">
@@ -1059,11 +1057,11 @@
     // ── DATA ──────────────────────────────────────────────
 
     const DEADLINE = new Date('2026-06-11T18:00:00Z'); // ensimmäinen ottelu alkaa 11.6.2026 klo 22:00 Suomen aikaa -> deadline tuntia ennen
-    const KO_OPEN = new Date('2026-06-28T06:00:00Z'); //pudotuspelien veikkaus aukeaa 28.6. klo 08:00 Suomen aikaa
+    const KO_OPEN = new Date('2026-06-28T04:00:00Z'); //pudotuspelien veikkaus aukeaa 28.6. klo 08:00 Suomen aikaa
     const KO_DEADLINE = new Date('2026-06-28T18:00:00Z'); //pudotuspelit alkavat 28.6. klo 22:00 Suomen aikaa -> deadline tuntia ennen
 
     // COUNTDOWN
-    const kocountdown = document.getElementById('ko-countdown');
+    //const kocountdown = document.getElementById('ko-countdown');
     const countdown = document.getElementById('countdown');
     function pad(value) {
         return String(value).padStart(2, '0');
@@ -1071,11 +1069,11 @@
 
     function updateCountdown() {
         const now = new Date();
-        //const diff = DEADLINE - now;
-        const diff = KO_OPEN - now;
+        const diff = KO_DEADLINE - now;
+        //const diff = KO_OPEN - now;
 
         if (diff <= 0) {
-            kocountdown.textContent = '00:00:00:00';
+            countdown.textContent = '00:00:00:00';
             clearInterval(timer);
             return;
         }
@@ -1087,7 +1085,7 @@
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
 
-        kocountdown.textContent =
+        countdown.textContent =
             `${days}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
     }
 
@@ -1229,13 +1227,13 @@
         },
         {
             id: `r32-4`,
-            teamA: { name: 'K2', flag: '' },
-            teamB: { name: 'L2', flag: '' },
+            teamA: { name: 'Portugali', flag: 'pt' },
+            teamB: { name: 'Kroatia', flag: 'hr' },
         },
         {
             id: `r32-5`,
             teamA: { name: 'Espanja', flag: 'es' },
-            teamB: { name: 'J2', flag: '' },
+            teamB: { name: 'Itävalta', flag: 'at' },
         },
         {
             id: `r32-6`,
@@ -1245,7 +1243,7 @@
         {
             id: `r32-7`,
             teamA: { name: 'Belgia', flag: 'be' },
-            teamB: { name: '3', flag: '' },
+            teamB: { name: 'Senegal', flag: 'sn' },
         },
         {
             id: `r32-8`,
@@ -1260,12 +1258,12 @@
         {
             id: `r32-10`,
             teamA: { name: 'Meksiko', flag: 'mx' },
-            teamB: { name: '3', flag: '' },
+            teamB: { name: 'Ecuador', flag: 'ec' },
         },
         {
             id: `r32-11`,
-            teamA: { name: 'L1', flag: '' },
-            teamB: { name: '3', flag: '' },
+            teamA: { name: 'Englanti', flag: 'gb-eng' },
+            teamB: { name: 'Kongo DR', flag: 'cd' },
         },
         {
             id: `r32-12`,
@@ -1280,12 +1278,12 @@
         {
             id: `r32-14`,
             teamA: { name: 'Sveitsi', flag: 'ch' },
-            teamB: { name: '3', flag: '' },
+            teamB: { name: 'Algeria', flag: 'dz' },
         },
         {
             id: `r32-15`,
-            teamA: { name: 'K1', flag: '' },
-            teamB: { name: '3', flag: '' },
+            teamA: { name: 'Kolumbia', flag: 'co' },
+            teamB: { name: 'Ghana', flag: 'gh' },
         },
     ];
 
